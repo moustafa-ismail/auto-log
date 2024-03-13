@@ -10,7 +10,7 @@ echo 'Enter your age'
 
 read age
 
-if [[ $age =~ [0-9] ]] && [[ $age>0 ]] && [[ $age<160 ]]; then 
+if [[ $age =~ [0-9] ]] && (( $age>0 )) && (( $age<160 )); then 
 	echo 'Thank u'
 
 else
