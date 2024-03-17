@@ -12,6 +12,7 @@ cd /var/log/
 if [ -f /var/log/vmware-vmsvc-root.log ]; then
 
 	# File exists
+	echo ""
 	echo "logs are found"
 	echo ""
 	echo "This is the content of the original logs"
@@ -34,29 +35,41 @@ if [ -f /var/log/vmware-vmsvc-root.log ]; then
 	fi
 
 
-	# Create backup using the last timestamp and adding .old
+	# Check for the number of backups and delete the oldest one if more than four exists
+	echo "Checking existing backups ...."
+	echo ""
+
+	if (( n>3 )); then
+
+		echo "The number of backups exceeds 4, the oldest backup will be deleted"
+		echo ""
+		
+		# Getting name of the oldest backup
+		
+		old_backup=$(ls /var/log | grep -E '.log[0-9]*.myold' | head -n 1)
+
+
+		
+		echo "This is the name of the oldest backup: $old_backup"
+		echo ""
+
+		# Deleting the oldest backup
+
+		echo "Deleting $old_backup ..."
+
+		rm -i "/var/log/$old_backup"
+		
+		echo "Oldest backup is deleted"
+	fi
+
+	# Create backup using the last timestamp and adding .myold
 	
-	echo "As if the backup has been created, it is not really created ;)"
+	echo "Backup is being created ... ;)"
 	echo ""
 
-	#cp /var/log/vmware-vmsvc-root.log /var/log/"$timestamp.log$n.myold"
-	
-	#if (( n>3 )); then
-
-	#	echo "The number of backups exceeds 4, the oldest backup will be deleted"
-	#	echo ""
+	cp /var/log/vmware-vmsvc-root.log /var/log/"$timestamp.log$n.myold"
 
 
-
-	echo "***A backup has been created***"
-
-	echo ""
-	echo "Here is a copy of the origingal log"
-	echo ""
-
-	cat /var/log/vmware-vmsvc-root.log
-	echo ""
-	echo "This is the timestamp $timestamp"
 else
 	# File does not exist
 	echo 'The log file does not exist'
