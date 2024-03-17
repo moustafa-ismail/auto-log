@@ -46,6 +46,7 @@ if [ -f /var/log/vmware-vmsvc-root.log ]; then
 
 	# File exists
 
+	timestamp=($cat /var/log/vmware-vmsvc-root.log | cut -d ' ' -f 1 | head -n 1)
 	cat /var/log/vmware-vmsvc-root.log
 	cp /var/log/vmware-vmsvc-root.log /var/log/vmware-root.log.old
 
