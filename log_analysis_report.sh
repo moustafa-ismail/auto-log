@@ -28,7 +28,8 @@ $(awk '/exit code: 0/ {count++} END {print "Number of error occurrences", count}
 $(awk '/exit code: 1/ {count++} END {print "Number of successful occurrences", count}' /var/log/vmware-vmsvc-root.log)
 $(awk '/Plugin/ {count++} END {print "Number of plugins:", count}' /var/log/vmware-vmsvc-root.log)
 -----------------------------------
-END REPORT"
+END REPORT" > log_analysis_report.txt
+
 	echo ""
 
 	# Get top timestamp of original file
