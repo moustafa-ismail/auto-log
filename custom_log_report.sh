@@ -9,21 +9,26 @@ message_user() {
 	echo "Usage: $0 -a <min_backup> -b <arg2> [-c] [-d] [-f <file>]"
 	echo "Options:"
 	echo "\t -m <min_backup>\t minimum number of backups to keep"
-	echo "\t -b <arg2>\t required argument 2"
-	echo "\t -c \t Optional Flag"
+	#echo "\t -b <arg2>\t required argument 2"
+	echo "\t -c \t If the flag is used log analysis is stored in .txt file in same directory"
 	echo "\t -d <dir>\t The directory to find logs in, default is /var/log"
 	echo "\t -f <file?\t The log file to make backups from, default is /var/log/vwmare-vmsvc-root.log"
 	exit 1
 }
 
-# Initializing variables
+## Initializing variables
 
-min_backup=3
-arg2=
-flagc=0
-filarg="/var/log/vmware-vmsvc-root.log"
-dirarg="/var/log"
+#min_backup=3
+#arg2=
+#flagc="h"
+#filarg="/var/log/vmware-vmsvc-root.log"
+#dirarg="/var/log"
 
+# source the config file
+
+#. /home/kali/automate-log1/auto-log/log_config.cfg
+
+. $(pwd)/log_config.cfg
 
 # Parse Options
 
@@ -31,12 +36,15 @@ while getopts ":a:b:cd:f:" opt; do
 	case $opt in 
 		a) min_backup="$OPTARG" ;;
 		b) arg2="$OPTARG" ;;
-		c) flagc="$OPTARG" ;;
+		c) flagc="$OPTARG";;
 		d) dirarg="$OPTARG" ;;
 		f) filarg="$OPTARG";;
 		\?) usage ;;
 	esac
 done
+
+
+
 
 
 # Test for the directory argument if the directory or location exists
@@ -79,21 +87,45 @@ if [ -f "$filarg" ]; then
 	echo "This is an analysis  of the original logs"
 	echo ""
 
-	# Reporting analysis of the log file
+
+
+
+	if [ -z "$flagc" ]; then
+		
+		# Reporting analysis of the log file
 	
 	
-	echo "START REPORT
+		echo "START REPORT
 -----------
 Number of Entries: $(cat "$filarg" | wc -l)
 $(awk '/exit code: 0/ {count++} END {print "Number of error occurrences", count}' "$filarg")
 $(awk '/exit code: 1/ {count++} END {print "Number of successful occurrences", count}' "$filarg")
 $(awk '/Plugin/ {count++} END {print "Number of plugins:", count}' "$filarg")
 -----------------------------------
-END REPORT" | tee log_analysis_report.txt
+END REPORT">log_analysis_report.txt
+
+		echo ""
+
+		echo "The log analysis has been created and can be viewed at log_analysis_report.txt"
+
+		echo ""
+	
+	else
+		
+		echo "START REPORT
+-----------
+Number of Entries: $(cat "$filarg" | wc -l)
+$(awk '/exit code: 0/ {count++} END {print "Number of error occurrences", count}' "$filarg")
+$(awk '/exit code: 1/ {count++} END {print "Number of successful occurrences", count}' "$filarg")
+$(awk '/Plugin/ {count++} END {print "Number of plugins:", count}' "$filarg")
+-----------------------------------
+END REPORT"
 
 
 
-	echo ""
+		echo ""
+
+	fi
 
 	# Get top timestamp of original file
 	
@@ -108,6 +140,7 @@ else
 fi
 	
 	
+
 # Check validity of min_backup (number of backups)
 if (( $min_backup>2 )) && (( $min_backup<8 )); then
 
